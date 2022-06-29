@@ -15,11 +15,12 @@ function createRandomStory(){
         title: faker.random.words(5),
         body: faker.lorem.paragraphs(5),
         favorite: faker.datatype.boolean(),
-        userId: Math.ceil(Math.random() * 100)
+        //userId: Math.ceil(Math.random() * 100)
+        userId: faker.datatype.number({ min:1, max: 100, precision: 1})
     }
 }
 
 Array.from({length: 100}).forEach(()=>USERS.push(createRandomUser()))
 Array.from({length: 500}).forEach(()=>STORIES.push(createRandomStory()))
 
-module.exports = { USERS, STORIES }
+module.exports = { USERS, STORIES, createRandomUser }

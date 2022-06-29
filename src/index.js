@@ -3,7 +3,16 @@ import { render } from 'react-dom';
 import axios from 'axios';
 import Users from './Users';
 import User from './User';
+import { createRandomUser } from '../seed-data';
+import { faker } from '@faker-js/faker'
 
+// const createUser = async() => {
+//   const response = await axios.post('/api/users', {
+//     name: `${faker.name.firstName()} ${faker.name.lastName()}`,
+//     bio: faker.lorem.paragraph()
+//   });
+//   return response.data;
+// }
 
 class App extends Component{
   constructor(){
@@ -12,6 +21,29 @@ class App extends Component{
       users: [],
       userId: ''
     };
+    this.destroy = this.destroy.bind(this);
+    this.create = this.create.bind(this);
+  }
+  async destroy(user) {
+    await axios.delete(`/api/users/${user.id}`);
+    const users = this.state.users.filter(_user => _user.id !== user.id );
+    this.setState({ users });
+  }
+
+  async create() {
+    try {
+      const user = createRandomUser();
+      console.log(user);
+      const users = [...this.state.users, user];
+      this.setState({ users });
+      await axios.post('/api/users', user);
+    }
+    catch(ex){
+      console.log(ex)
+    }
+    // const user = await createUser();
+    // const users = [...this.state.users, user];
+    // this.setState({ users })
   }
   async componentDidMount(){
     try {
@@ -20,9 +52,10 @@ class App extends Component{
       const response = await axios.get('/api/users');
       this.setState({ users: response.data });
       window.addEventListener('hashchange', ()=> {
-      const userId = window.location.hash.slice(1);
-      this.setState({ userId });
+        const userId = window.location.hash.slice(1);
+        this.setState({ userId });
       });
+
     }
     catch(ex){
       console.log(ex);
@@ -31,11 +64,12 @@ class App extends Component{
   }
   render(){
     const { users, userId } = this.state;
+    const { destroy, create } = this;
     return (
       <div>
         <h1>Acme Writers Group ({ users.length })</h1>
         <main>
-          <Users users = { users } userId={ userId }/>
+          <Users users = { users } userId={ userId } destroy={ destroy } create={ create }/>
           {
             userId ? <User userId={ userId } /> : null
           }

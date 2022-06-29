@@ -21,13 +21,18 @@ class User extends Component{
       let response = await axios.get(`/api/users/${this.props.userId}`);
       this.setState({ user: response.data });
       response = await axios.get(`/api/users/${this.props.userId}/stories`);
-      this.setState({ stories: response.data });
-      
+      this.setState({ stories: response.data });    
     }
+  }
+  async deleteStory( story ) {
+    console.log(story);
+    await axios.delete(`/api/stories/${story.id}`);
+    const stories = this.state.stories.filter(_story => _story.id !== story.id );
+    this.setState({ stories });
   }
   render(){
     const { user, stories } = this.state;
-    console.log(stories);
+    const { deleteStory } = this;
     return (
       <div>
         Details for { user.name }
@@ -40,6 +45,7 @@ class User extends Component{
               return (
                 <li key={ story.id }>
                   { story.title }
+                  <button onClick={() => deleteStory(story) }>Delete Story</button>
                   <p>
                   { story.body }
                   </p>
@@ -53,7 +59,5 @@ class User extends Component{
     );
   }
 }
-
-
 
 export default User;

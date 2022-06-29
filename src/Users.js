@@ -1,9 +1,9 @@
 import React from 'react';
 
-
-const Users = ({ users, userId })=> {
+const Users = ({ users, userId, destroy, create })=> {
   return (
     <ul>
+      <button onClick={ create }>Add A User</button>
       <li className={ !userId ? 'selected': ''}>
         <a href='#'>Users</a>
       </li>
@@ -14,6 +14,7 @@ const Users = ({ users, userId })=> {
               <a href={`#${user.id}`}>
                 { user.name }
               </a>
+              <button onClick= {()=> destroy(user)}>x</button>
             </li>
           );
         })
