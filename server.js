@@ -64,6 +64,17 @@ app.post('/api/stories', async(req, res, next) => {
   }
 })
 
+app.put('/api/stories/:id', async(req, res, next) => {
+  try {
+    const story = await Story.findByPk(req.params.id);
+    Object.assign(story, req.body);
+    res.send(await story.save());
+  }
+  catch(ex){
+    next(ex);
+  }
+});
+
 app.delete('/api/users/:id', async(req, res, next) => {
   try {
     const user = await User.findByPk(req.params.id);

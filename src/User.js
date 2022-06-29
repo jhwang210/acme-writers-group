@@ -11,6 +11,8 @@ class User extends Component{
     };
     this.deleteStory = this.deleteStory.bind(this);
     this.createStory = this.createStory.bind(this);
+    this.favorite = this.favorite.bind(this);
+    this.unfavorite = this.unfavorite.bind(this);
   }
   async componentDidMount(){
     let response = await axios.get(`/api/users/${this.props.userId}`);
@@ -38,14 +40,35 @@ class User extends Component{
       favorite: faker.datatype.boolean(),
       userId: userId
     }
-    console.log(story);
-    await axios.post(`/api/stories`, story);
+    await axios.post('/api/stories', story);
     let response = await axios.get(`/api/users/${userId}/stories`);
     this.setState({ stories: response.data });
   }
+  async favorite( story ) {
+    try {
+      await axios.put(`/api/stories/${story.id}`, {favorite: true} );
+      let response = await axios.get(`/api/users/${story.userId}/stories`);
+      this.setState({ stories: response.data });
+      console.log(story.favorite);
+    }
+    catch(ex){
+      console.log(ex);
+    }
+  }
+  async unfavorite( story ) {
+    try {
+      await axios.put(`/api/stories/${story.id}`, {favorite: false} );
+      let response = await axios.get(`/api/users/${story.userId}/stories`);
+      this.setState({ stories: response.data });
+      console.log(story.favorite);
+    }
+    catch(ex){
+      console.log(ex);
+    }
+  }
   render(){
     const { user, stories } = this.state;
-    const { deleteStory, createStory } = this;
+    const { deleteStory, createStory, favorite, unfavorite } = this;
     return (
       <div>
         Details for { user.name }
@@ -60,6 +83,10 @@ class User extends Component{
                 <li key={ story.id }>
                   { story.title }
                   <button onClick={() => deleteStory(story) }>Delete Story</button>
+                  { story.favorite ?
+                    <button onClick={ () => unfavorite(story) }>Unfavorite</button> :
+                    <button onClick={ () => favorite(story) }>Favorite</button>
+                  }
                   <p>
                   { story.body }
                   </p>
