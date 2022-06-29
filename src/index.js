@@ -4,15 +4,6 @@ import axios from 'axios';
 import Users from './Users';
 import User from './User';
 import { createRandomUser } from '../seed-data';
-import { faker } from '@faker-js/faker'
-
-// const createUser = async() => {
-//   const response = await axios.post('/api/users', {
-//     name: `${faker.name.firstName()} ${faker.name.lastName()}`,
-//     bio: faker.lorem.paragraph()
-//   });
-//   return response.data;
-// }
 
 class App extends Component{
   constructor(){
@@ -24,6 +15,7 @@ class App extends Component{
     this.destroy = this.destroy.bind(this);
     this.create = this.create.bind(this);
   }
+
   async destroy(user) {
     await axios.delete(`/api/users/${user.id}`);
     const users = this.state.users.filter(_user => _user.id !== user.id );
@@ -33,18 +25,17 @@ class App extends Component{
   async create() {
     try {
       const user = createRandomUser();
-      console.log(user);
-      const users = [...this.state.users, user];
-      this.setState({ users });
       await axios.post('/api/users', user);
+      //Is there a way to make state like this, or do I have to call api? because id does not exist until users is pushed onto api via axios
+      //const users = [...this.state.users, user];
+      let response = await axios.get('/api/users');
+      this.setState({ users: response.data });
     }
     catch(ex){
       console.log(ex)
     }
-    // const user = await createUser();
-    // const users = [...this.state.users, user];
-    // this.setState({ users })
   }
+  
   async componentDidMount(){
     try {
       const userId = window.location.hash.slice(1);

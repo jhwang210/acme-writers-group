@@ -55,6 +55,15 @@ app.delete('/api/stories/:id', async(req, res, next) => {
   }
 });
 
+app.post('/api/stories', async(req, res, next) => {
+  try {
+    res.status(201).send(await Story.create(req.body));
+  }
+  catch(ex){
+    next(ex);
+  }
+})
+
 app.delete('/api/users/:id', async(req, res, next) => {
   try {
     const user = await User.findByPk(req.params.id);
@@ -74,6 +83,7 @@ app.post('/api/users', async(req, res, next) => {
     next(ex);
   }
 })
+
 const port = process.env.PORT || 3000;
 
 app.listen(port, ()=> console.log(`listening on port ${port}`));

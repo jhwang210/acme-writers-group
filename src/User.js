@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+const { faker } = require('@faker-js/faker');
 
 class User extends Component{
   constructor(){
@@ -8,13 +9,14 @@ class User extends Component{
       user: {},
       stories: [] 
     };
+    this.deleteStory = this.deleteStory.bind(this);
+    this.createStory = this.createStory.bind(this);
   }
   async componentDidMount(){
     let response = await axios.get(`/api/users/${this.props.userId}`);
     this.setState({ user: response.data });
     response = await axios.get(`/api/users/${this.props.userId}/stories`);
     this.setState({ stories: response.data });
-
   }
   async componentDidUpdate(prevProps){
     if(prevProps.userId !== this.props.userId){
@@ -25,17 +27,29 @@ class User extends Component{
     }
   }
   async deleteStory( story ) {
-    console.log(story);
     await axios.delete(`/api/stories/${story.id}`);
-    const stories = this.state.stories.filter(_story => _story.id !== story.id );
-    this.setState({ stories });
+    let response = await axios.get(`/api/users/${story.userId}/stories`);
+    this.setState({ stories: response.data });
+  }
+  async createStory( userId ) {
+    const story = {
+      title: faker.random.words(5),
+      body: faker.lorem.paragraphs(5),
+      favorite: faker.datatype.boolean(),
+      userId: userId
+    }
+    console.log(story);
+    await axios.post(`/api/stories`, story);
+    let response = await axios.get(`/api/users/${userId}/stories`);
+    this.setState({ stories: response.data });
   }
   render(){
     const { user, stories } = this.state;
-    const { deleteStory } = this;
+    const { deleteStory, createStory } = this;
     return (
       <div>
         Details for { user.name }
+        <button onClick={() => createStory(user.id) }>Create A Story</button>
         <p>
           { user.bio }
         </p>

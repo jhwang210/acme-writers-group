@@ -24,5 +24,3 @@ const Users = ({ users, userId, destroy, create })=> {
 }
 
 export default Users;
-
-
